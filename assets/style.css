@@ -1,0 +1,191 @@
+/* Tema retro-futurista "verde neon" (modo escuro padrão). */
+
+:root {
+  --bg: #050a06;
+  --bg2: #0a120c;
+  --panel: #0a120c;
+  --border: #123a24;
+  --green: #00ff9d;
+  --green-dim: rgba(0, 255, 157, 0.35);
+  --cyan: #00e5ff;
+  --red: #ff2d55;
+  --text: #d9ffe9;
+  --muted: #8fd9ae;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: radial-gradient(1400px 900px at 18% -12%, #0b1a10 0%, var(--bg) 55%) fixed;
+  color: var(--text);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Menlo', 'Courier New', monospace;
+}
+
+.app-shell { max-width: 1520px; margin: 0 auto; padding: 18px 22px 30px; }
+
+.neon-title {
+  color: var(--green);
+  font-size: 22px;
+  margin: 0 0 6px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px var(--green-dim), 0 0 2px var(--green);
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 12.5px;
+  margin: 0 0 14px;
+  line-height: 1.55;
+}
+
+/* ---------------------------------------------------------------- controles */
+.controls { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.controls .field-label { color: var(--green); font-weight: bold; font-size: 13px; text-shadow: 0 0 6px var(--green-dim); }
+
+/* Dropdown (dcc) escuro — classes do novo componente Dash */
+.dash-dropdown {
+  background: var(--bg2) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 157, 0.10) !important;
+}
+.dash-dropdown:hover, .dash-dropdown:focus {
+  border-color: var(--green) !important;
+}
+.dash-dropdown-value, .dash-dropdown-value-item { color: var(--text) !important; }
+.dash-dropdown-trigger-icon { fill: var(--green) !important; color: var(--green) !important; }
+.dash-dropdown-content {
+  background: var(--bg2) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6) !important;
+}
+.dash-dropdown-search { color: var(--text) !important; }
+.dash-options-list-option {
+  color: var(--text) !important;
+}
+.dash-options-list-option:hover,
+.dash-options-list-option.selected {
+  background: rgba(0, 255, 157, 0.10) !important;
+  color: var(--green) !important;
+}
+
+/* RadioItems (dcc) escuro */
+.view-toggle { display: flex; gap: 6px; }
+.view-toggle label {
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.15s;
+}
+.view-toggle input { display: none; }
+.view-toggle input:checked + * { }
+.view-toggle label:has(input:checked) {
+  color: var(--green);
+  border-color: var(--green);
+  background: rgba(0, 255, 157, 0.08);
+  text-shadow: 0 0 8px var(--green-dim);
+  box-shadow: 0 0 10px var(--green-dim);
+}
+
+/* ---------------------------------------------------------------- layout */
+.single-layout { display: flex; gap: 16px; align-items: flex-start; }
+
+.map-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 5px;
+  background: var(--bg2);
+  box-shadow: 0 0 14px rgba(0, 255, 157, 0.10);
+}
+.map-cell .dash-graph { width: 100%; }
+.map-single { flex: 1 1 auto; min-width: 0; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
+.grid .map-cell { min-width: 0; }
+.map-cell .dash-graph, .map-cell .js-plotly-plot { cursor: pointer; }
+
+/* ---------------------------------------------------------------- painel */
+.panel {
+  flex: 0 0 340px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(0,255,157,0.05), var(--panel) 30%);
+  box-shadow: 0 0 18px rgba(0, 255, 157, 0.12) inset, 0 0 12px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  max-height: 760px;
+}
+.panel h3 { color: var(--green); text-shadow: 0 0 8px var(--green-dim); margin: 0 0 6px; font-size: 15px; }
+.panel h4 { color: var(--cyan); margin: 16px 0 4px; font-size: 12.5px; letter-spacing: 0.5px; }
+.panel hr { border: none; border-top: 1px solid var(--border); }
+.panel table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.panel th, .panel td { border: 1px solid var(--border); padding: 4px 7px; text-align: left; }
+.panel th { color: var(--muted); font-weight: normal; }
+.panel ol, .panel ul { margin: 0; padding-left: 18px; font-size: 12px; color: var(--muted); }
+.panel li { margin: 2px 0; }
+.panel .rho-line { color: var(--muted); font-size: 12.5px; }
+
+/* ---------------------------------------------------------------- legenda / rodapé */
+.legend {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg2);
+  font-size: 12px;
+  color: var(--muted);
+  box-shadow: 0 0 14px rgba(0, 255, 157, 0.08);
+}
+.legend strong { color: var(--green); text-shadow: 0 0 6px var(--green-dim); }
+.legend .swatch { font-weight: bold; }
+.footer {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #5f856f;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------- popup */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.30);
+  backdrop-filter: blur(1px);
+}
+.state-popup {
+  position: fixed;
+  z-index: 999;
+  min-width: 260px;
+  max-width: 340px;
+  background: rgba(5, 10, 6, 0.97);
+  border: 1px solid var(--green);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.55;
+  pointer-events: auto;
+}
+.pp-card { display: flex; flex-direction: column; gap: 2px; }
+.pp-head { font-size: 15px; font-weight: bold; letter-spacing: 0.5px; text-shadow: 0 0 8px rgba(0,255,157,0.4); }
+.pp-sector { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.pp-meta { color: var(--muted); font-size: 11.5px; margin: 2px 0; }
+.pp-block { color: var(--green); font-size: 10.5px; letter-spacing: 1px; margin-top: 8px; opacity: 0.85; }
+.pp-row { display: flex; justify-content: space-between; gap: 12px; }
+.pp-row .pp-k { color: var(--muted); }
+.pp-row .pp-v { color: var(--text); font-weight: bold; }
+.pp-interp { color: var(--text); font-style: italic; }
+
+/* ---------------------------------------------------------------- scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #1d5236; }

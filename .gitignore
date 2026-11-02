@@ -1,0 +1,25 @@
+# Ambiente virtual
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Shapefile baixado automaticamente (data/BR_UF_2022/)
+data/
+
+# Artefatos de debug
+print.png
+
+# Materiais de referência (PDFs grandes, não necessários para executar)
+artigos_e_relatorios/
+
+# Sistema operacional / editores
+.DS_Store
+*.swp
+.idea/
+.vscode/
+HISTORICO.md
