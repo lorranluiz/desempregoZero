@@ -69,7 +69,7 @@ def compute_all():
         tilde_I[sid] = {uf: I[sid][uf] / sector_max for uf in UF_NAMES}
         T[sid] = {uf: I[sid][uf] / global_max_I for uf in UF_NAMES}
 
-    # --- Passo 3: potencial de mobilidade (soma direta, sem fator) -------
+    # --- Passo 3: potencial de realocação de trabalhadores (soma direta) ---
     potencial_bruto = {
         uf: subutilizacao.get(uf, 0.0) + informais.get(uf, 0.0) for uf in UF_NAMES
     }

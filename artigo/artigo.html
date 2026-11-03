@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapas Setoriais para Realocação de Trabalhadores para Desemprego Zero em uma Economia Planificada no Brasil</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    tags: 'none'
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Times New Roman", "Liberation Serif", Times, serif;
+    font-size: 10pt;
+    line-height: 1.32;
+    color: #000;
+    text-align: justify;
+    hyphens: auto;
+  }
+  /* Cabeçalho, coluna única */
+  .titleblock { text-align: center; }
+  h1.title {
+    font-size: 22pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 2mm;
+    line-height: 1.15;
+  }
+  .author { font-size: 12pt; margin: 0 0 0.5mm; }
+  .affil { font-size: 9.5pt; font-style: italic; margin: 0 0 4mm; }
+  .abstract, .keywords {
+    font-size: 9pt;
+    text-align: justify;
+    margin: 0 0 3mm;
+  }
+  .label { font-weight: bold; font-style: italic; }
+  .keywords { font-style: italic; }
+
+  /* Corpo, duas colunas */
+  .columns {
+    column-count: 2;
+    column-gap: 6mm;
+    column-rule: 0.25pt solid #000;
+  }
+  h2 {
+    font-size: 10pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 3mm 0 1.2mm;
+    text-align: left;
+    break-after: avoid;
+  }
+  h3 {
+    font-size: 10pt;
+    font-style: italic;
+    margin: 2mm 0 0.8mm;
+    text-align: left;
+    break-after: avoid;
+  }
+  p { margin: 0 0 1.4mm; }
+  .eq {
+    text-align: center;
+    margin: 2mm 0;
+    break-inside: avoid;
+  }
+  ol.refs { font-size: 8.5pt; padding-left: 4.5mm; margin: 0; }
+  ol.refs li { margin-bottom: 1.1mm; text-align: left; }
+  table {
+    border-collapse: collapse;
+    font-size: 8.3pt;
+    width: 100%;
+    margin: 1.8mm 0;
+    break-inside: avoid;
+  }
+  caption {
+    font-size: 8.3pt;
+    text-align: center;
+    margin-bottom: 0.8mm;
+  }
+  th, td {
+    border: 0.5pt solid #000;
+    padding: 0.8mm 1.2mm;
+    text-align: center;
+    vertical-align: middle;
+  }
+  th { background: #ececec; }
+  td.l { text-align: left; }
+  .figure-inline { break-inside: avoid; margin: 2mm 0; }
+  .figure-inline img { width: 100%; }
+
+  /* Apêndice de mapas, coluna única, um por página */
+  .appendix {
+    column-count: 1;
+    margin-top: 4mm;
+  }
+  .appendix h2 { column-span: all; }
+  .map-page {
+    page-break-after: always;
+    page-break-inside: avoid;
+    break-after: page;
+    break-inside: avoid;
+    margin: 0 0 6mm;
+  }
+  .map-page img { width: 100%; }
+  .map-page figcaption {
+    font-size: 9pt;
+    text-align: justify;
+    margin: 1mm 0 0;
+  }
+  .map-page figcaption b { }
+  .legend-box {
+    border: 0.5pt solid #000;
+    padding: 1.5mm 2mm;
+    font-size: 8.3pt;
+    break-inside: avoid;
+    margin: 1.5mm 0;
+  }
+  .small { font-size: 8.3pt; }
+</style>
+</head>
+<body>
+
+<div class="titleblock">
+  <h1 class="title">Mapas Setoriais para Realocação de Trabalhadores para Desemprego Zero em uma Economia Planificada no Brasil</h1>
+  <div class="author">Lorran Neves</div>
+  <div class="affil">Universidade Federal Fluminense, lorranluiz@id.uff.br</div>
+</div>
+
+<div class="abstract">
+  <span class="label">Abstract—</span>
+  This paper describes, step by step, how to build twelve thematic maps of Brazil, one per
+  sector of the Brazilian input-output matrix (MIP) at its twelve-sector level, that combine
+  (i) a choropleth background representing the worker-reallocation potential in each
+  Federative Unit and (ii) arrows positioned on the boundaries between neighboring units that represent the net flow of workers that may occur between them with a view to achieving zero unemployment and the consequent reduction in working hours, while satisfying total demand. The construction uses a sectoral
+  labour-shortage/excess index \(\rho_i\) (taken from Neves), the sectoral gross-value-added
+  share \(w_i^r\), and a worker-reallocation-potential layer given by the sum of labour underutilization
+  and informal workers, both normalized to the national total. The paper is strictly
+  methodological: it presents the input data and their public sources, the mathematical
+  equations, the cartographic construction and the visual encoding, without analysing the
+  resulting numbers, and closes with the twelve maps as an application example.
+</div>
+
+<div class="keywords">
+  <span class="label">Index Terms—</span>
+  thematic maps, labour reallocation, input-output sectors, choropleth, interstate net flows, Brazil.
+</div>
+
+<div class="columns">
+
+<h2>I. Introdução</h2>
+
+<p>
+Este artigo descreve o procedimento completo para gerar doze mapas temáticos do Brasil,
+um para cada setor da Matriz de Insumo-Produto (MIP) em seu nível de doze atividades, que
+sobrepõem duas camadas de informação. A primeira é um <em>choropleth</em> de fundo que
+representa o <em>potencial de realocação de trabalhadores</em> de cada Unidade da Federação
+(UF); a segunda é um conjunto de <em>setas</em> posicionadas nas fronteiras entre UFs
+vizinhas, que representam o <em>fluxo líquido</em> de trabalhadores entre elas para aquele
+setor. O objetivo é permitir reproduzir os mapas a partir das fontes públicas de dados,
+concentrando-se na matemática envolvida e deixando a implementação em qualquer linguagem de
+programação a critério do leitor.
+</p>
+
+<p>
+A aplicação descrita é um caso particular de um método mais geral, que depende apenas da
+existência de tabelas com os dados e da malha cartográfica no nível desejado. O índice
+geográfico \(r\) não precisa ser a Unidade da Federação: pode ser o município, a região, o
+país ou o continente; e o índice \(i\) não precisa ser o setor de doze atividades da MIP:
+pode ser qualquer partição em mais ou menos setores, ou mesmo o nível de produto. As equações
+das Seções IV e V permanecem válidas trocando-se apenas o conjunto de índices e as tabelas de
+origem (valor adicionado, subutilização, informais e o parâmetro \(\rho_i\) calculados naquele
+nível). Os doze mapas aqui apresentados são, portanto, um exemplo de aplicação, e não o limite
+do método.
+</p>
+
+<p>
+A fundamentação teórica do único indicador derivado de elaboração prévia, o índice setorial
+de excesso ou falta de trabalhadores \(\rho_i\), deve-se a Neves [1], [2], para os quais o
+leitor é remetido. No procedimento aqui descrito esse índice entra como <em>dado pronto</em>
+(um valor por setor), de modo que o presente texto não rederiva nem analisa aquele índice,
+apenas o emprega.
+</p>
+
+<p>
+As tabelas de origem são atualizadas periodicamente e publicadas na internet pelos órgãos
+produtores; portanto, o mesmo conjunto de equações pode ser reexecutado com tabelas mais
+recentes para regenerar os mapas com dados novos, sem qualquer mudança metodológica.
+</p>
+
+<h2>II. O teto de carga horária e o índice setorial \(\rho_i\)</h2>
+
+<p>
+Os mapas pressupõem a economia de desemprego zero descrita por Neves [1], [2]. Nessa
+economia, o <em>esforço de trabalho socialmente necessário</em> \(H^{*}\) é o total de horas
+de trabalho diretas e indiretas (embutidas nos insumos) requerido para produzir toda a cesta
+de demanda final, calculado como \(H^{*}=\hat{t}^{\top}(I-A)^{-1}y\), em que \(A\) é a matriz
+de coeficientes técnicos, \(y\) o vetor de demanda final e \(\hat{t}\) o vetor de tempos de
+trabalho diretos [1, Eqs. (1) e (2)]. Repartindo esse esforço igualitariamente entre todos os
+aptos ao trabalho \(L\), obtém-se o <em>teto de carga horária</em>, isto é, a jornada média
+socialmente necessária \(J^{*}=H^{*}/L\) [1, Eq. (3)], fixada como limite legal de trabalho:
+se todos trabalharem até esse teto, a demanda final é atendida com pleno emprego e sem
+escassez. A versão setorial do teto, \(J_i^{*}=H_i^{*}/L_i\), comparada ao teto agregado,
+produz o índice \(\rho_i = J_i^{*}/J^{*} = (H_i^{*}/H^{*})/(L_i/L)\) que os mapas empregam.
+</p>
+
+<p>
+Numa economia nessas condições, os trabalhadores hoje fora dos doze setores (desempregados,
+subutilizados e informais) constituem o contingente a realocar para os setores com falta de
+trabalhadores, isto é, os de maior \(\rho_i\). O mapa de cada setor torna essa realocação
+visível no espaço: o fundo mede o <em>potencial de realocação de trabalhadores</em> de cada
+UF (a fração do contingente nacional de subutilizados e informais que ali reside), e as setas
+mostram, entre estados vizinhos, para onde esse contingente tenderia a se deslocar para suprir
+o setor. Do mapa extraem-se três informações de realocação: a <em>prioridade</em> do setor
+(cor, via \(\rho_i\) contra \(\bar\rho\)); os <em>estados cedentes e receptores</em> (sinal do
+saldo, definido na Seção IV); e a <em>direção líquida</em> do deslocamento entre vizinhos
+(sentido das setas).
+</p>
+
+<p>
+A MIP brasileira é publicada pelo IBGE num nível de doze atividades, cuja classificação é
+comum aos dados de valor adicionado das Contas Regionais. A Tabela I lista os doze setores
+(com o código de dois dígitos usado nos mapas) e, para cada um, o valor do índice
+\(\rho_i\) para o ano de 2024, transcrito da Tabela II-<em>quinquies</em> de Neves [2].
+</p>
+
+<table>
+<caption>TABELA I, Setores da MIP e índice setorial \(\rho_i\) (2024) [2]</caption>
+<tr><th>Cód.</th><th>Setor (atividade, nível 12)</th><th>\(\rho_i\)</th><th>Classificação</th></tr>
+<tr><td>01</td><td class="l">Agropecuária</td><td>1,616</td><td>Atração (\(\rho_i&gt;\bar{\rho}\))</td></tr>
+<tr><td>02</td><td class="l">Indústrias extrativas</td><td>1,768</td><td>Atração</td></tr>
+<tr><td>03</td><td class="l">Indústrias de transformação</td><td>1,603</td><td>Atração</td></tr>
+<tr><td>04</td><td class="l">Eletricidade e gás, água, esgoto e resíduos</td><td>1,415</td><td>Atração</td></tr>
+<tr><td>05</td><td class="l">Construção</td><td>1,017</td><td>Repulsão (\(\rho_i&lt;\bar{\rho}\))</td></tr>
+<tr><td>06</td><td class="l">Comércio e reparação</td><td>1,440</td><td>Atração</td></tr>
+<tr><td>07</td><td class="l">Transporte, armazenagem e correio</td><td>1,340</td><td>Repulsão</td></tr>
+<tr><td>08</td><td class="l">Informação e comunicação</td><td>1,231</td><td>Repulsão</td></tr>
+<tr><td>09</td><td class="l">Atividades financeiras e seguros</td><td>1,194</td><td>Repulsão</td></tr>
+<tr><td>10</td><td class="l">Atividades imobiliárias</td><td>1,211</td><td>Repulsão</td></tr>
+<tr><td>11</td><td class="l">Outros serviços</td><td>1,203</td><td>Repulsão</td></tr>
+<tr><td>12</td><td class="l">Administração, defesa, educação e saúde públicas</td><td>1,460</td><td>Atração</td></tr>
+</table>
+
+<p>
+O índice \(\rho_i\) é definido por Neves [1, Eq. (8)] como a razão entre a participação do
+setor no esforço total de trabalho e a sua participação no total de trabalhadores:
+\[
+\rho_i = \frac{H_i^{*}/H^{*}}{L_i/L},
+\tag{1}
+\]
+em que \(H_i^{*}\) é o esforço de trabalho do setor \(i\), \(H^{*}=\sum_i H_i^{*}\) o
+esforço total, \(L_i\) a força de trabalho alocada ao setor e \(L\) a força de trabalho
+total. Um setor com \(\rho_i&gt;1\) contribui com uma fração do esforço maior do que a sua
+fração de trabalhadores (falta de trabalhadores); com \(\rho_i&lt;1\) ocorre o contrário
+(excesso). Para o mapa, define-se o limiar de classificação como a média aritmética dos doze
+índices:
+\[
+\bar{\rho} = \frac{1}{12}\sum_{i=1}^{12}\rho_i \approx 1{,}3748 .
+\tag{2}
+\]
+Adota-se aqui a média <em>simples</em>, e não a média ponderada por trabalhadores, unitária
+em [1, Eq. (9)], porque cada setor é tratado simetricamente (um mapa por setor). A partição
+em setores de atração e de repulsão resume-se, assim, aos dois casos:
+</p>
+
+<div class="legend-box">
+<ul style="margin:0;padding-left:4mm;">
+<li><b>setor de atração</b> (\(\rho_i &gt; \bar{\rho}\)): esforço requerido acima da força de trabalho alocada, para onde os trabalhadores devem ser direcionados;</li>
+<li><b>setor de repulsão</b> (\(\rho_i &lt; \bar{\rho}\)): excesso relativo de trabalhadores.</li>
+</ul>
+</div>
+
+<p>
+A partição é exatamente balanceada na média simples: seis setores têm \(\rho_i&gt;\bar{\rho}\)
+e seis têm \(\rho_i&lt;\bar{\rho}\) (Tabela I).
+</p>
+
+<p>
+O índice \(\rho_i\) é, porém, apenas o retrato estático de uma condição dinâmica. Em Neves
+[1, Seção II.E], define-se o <em>gap reprodutivo</em> \(e(t)=H(t)-L(t)J(t)\), a defasagem
+entre o esforço socialmente necessário e a capacidade da força de trabalho sob o teto legal
+vigente; no plano estático, \(e=0\) é uma identidade, e é nesse caso, \(e(t)=0\), que os doze
+mapas deste artigo foram produzidos. A versão setorial dessa condição, com os gaps setoriais
+\(e_i(t)=H_i(t)-L_i(t)J_i(t)\) tais que \(\sum_i e_i(t)=e(t)\), é o problema de controle
+[1, Eq. (13b)]:
+</p>
+
+\[
+\begin{aligned}
+\min_{J_i(\cdot)} \int_0^T \Bigl| \sum_{i=1}^{n} \bigl[ t_i(t) \cdot [(I - A(t))^{-1} y(t)]_i - L_i(t) J_i(t) \bigr] \Bigr| \, dt, \\
+\text{sujeito a } \frac{1}{L(t)} \sum_{i=1}^{n} L_i(t) J_i(t) \in [J_{\min}, J_{\max}], \quad J_i(t) \ge 0,\; i=1,\dots,n.
+\end{aligned}
+\tag*{(13b)}
+\]
+
+<p>
+Nela, cada \(H_i(t)=t_i(t)[(I-A(t))^{-1}y(t)]_i\) depende de toda a matriz de Leontief e de
+todo o vetor de demanda final, e a restrição \(\sum_i L_i(t)=L(t)\) acopla as alocações:
+minimizar \(|e(t)|\) é uma minimização <em>acoplada</em> entre setores, e não uma soma de
+minimizações independentes. Como os \(\rho_i\) empregados nos mapas derivam dessas mesmas
+grandezas (\(H_i^*\), \(L_i\), \(H^*\), \(L\)), as informações que os mapas exibem, para
+\(e(t)=0\), refletem também a interdependência intersetorial expressa pela Eq. (13b), isto é,
+as demandas, os tempos de produção e a quantidade de trabalhadores de cada setor.
+</p>
+
+<h2>III. Dados de entrada e fontes</h2>
+
+<p>
+A Tabela II resume os cinco insumos necessários, o órgão produtor, a publicação de origem, o
+ano de referência e a grandeza que cada um fornece ao mapa. As referências completas (com os
+endereços eletrônicos das tabelas) encontram-se na seção de Referências.
+</p>
+
+<table>
+<caption>TABELA II, Dados de entrada e fontes</caption>
+<tr><th>Dado</th><th>Fonte (órgão / publicação)</th><th>Ano</th><th>Fornece ao mapa</th></tr>
+<tr><td class="l">VAB setorial por UF, \(VAB_i^r\)</td><td class="l">IBGE, Sistema de Contas Regionais: Brasil 2023, Tabela 6 (abas 6.2–6.13), coluna 2022 [3]</td><td>2022</td><td class="l">peso \(w_i^r\) (comprimento/espessura e direção das setas)</td></tr>
+<tr><td class="l">Subutilização da força de trabalho, \(S_r\)</td><td class="l">IBGE, PNAD Contínua, Tabela 4666 (SIDRA) [4]</td><td>2024</td><td class="l">1ª parcela do potencial de realocação de trabalhadores</td></tr>
+<tr><td class="l">Trabalhadores informais, \(I_r\)</td><td class="l">IBGE, PNAD Contínua, Tabela 8517 (SIDRA) [5]</td><td>4º tri 2024</td><td class="l">2ª parcela do potencial de realocação de trabalhadores</td></tr>
+<tr><td class="l">Malha das UFs (shapefile)</td><td class="l">IBGE, Malha Municipal 2022, arquivo BR_UF_2022 [6]</td><td>2022</td><td class="l">base cartográfica (polígonos, centroides, fronteiras)</td></tr>
+<tr><td class="l">Índice setorial \(\rho_i\)</td><td class="l">ILAESE, Anuário Estatístico 2025/26, Tabela II-<em>quinquies</em> [7], via [2]</td><td>2024</td><td class="l">classificação do setor (atração/repulsão)</td></tr>
+</table>
+
+<p>
+Como as fontes são atualizadas em calendários distintos, o conjunto de trabalho combina anos
+diferentes: o VAB de 2022 (mais recente das Contas Regionais), a subutilização e os informais
+de 2024 (mais recentes da PNAD Contínua) e o \(\rho_i\) de 2024. Nada impede, contudo, que
+se baixem tabelas mais novas, as três primeiras estão disponíveis em repositórios abertos
+(SIDRA e o FTP das Contas Regionais), e se recompute tudo com o mesmo encadeamento de
+equações.
+</p>
+
+<h2>IV. Metodologia matemática</h2>
+
+<p>
+Denota-se por \(i=1,\dots,12\) o setor e por \(r=1,\dots,27\) a UF. Todas as grandezas que
+alimentam o mapa são, ao final, normalizadas para a escala nacional, de modo que as unidades
+físicas (reais ou pessoas) se cancelam; o que interessa é a distribuição relativa entre UFs.
+</p>
+
+<h3>A. Peso setorial</h3>
+<p>
+Seja \(VAB_i^r\) o valor adicionado bruto do setor \(i\) na UF \(r\), lido da Tabela 6 das
+Contas Regionais. O <em>peso setorial</em> da UF \(r\) no setor \(i\) é
+\[
+w_i^r = \frac{VAB_i^r}{\sum_{r'} VAB_i^{r'}},
+\qquad \sum_r w_i^r = 1 .
+\tag{3}
+\]
+\(w_i^r\) é a participação da UF no VAB nacional do setor \(i\); é a grandeza que, em cada
+setor, regula as setas de fluxo.
+</p>
+
+<h3>B. Potencial de realocação de trabalhadores</h3>
+<p>
+O <em>potencial bruto</em> de realocação de trabalhadores de cada UF é a soma de duas parcelas, a
+subutilização da força de trabalho \(S_r\) e os trabalhadores informais \(I_r\):
+\[
+B_r = S_r + I_r .
+\tag{4}
+\]
+Normaliza-se pelo total nacional, obtendo-se o potencial de realocação de trabalhadores (fração de 1):
+\[
+P_r = \frac{B_r}{\sum_{r'} B_{r'}},
+\qquad \sum_r P_r = 1 .
+\tag{5}
+\]
+\(P_r\) é o valor representado pela cor de fundo (choropleth): quanto maior, mais concentra
+a UF o estoque nacional de trabalhadores subutilizados e informais, os candidatos a
+realocação para os setores formais.
+</p>
+
+<h3>C. Saldo (excedente/déficit de trabalhadores)</h3>
+<p>
+Para cada par setor-UF define-se o <em>saldo</em> como a diferença entre o potencial
+normalizado e o peso setorial:
+\[
+b_i^r = P_r - w_i^r .
+\tag{6}
+\]
+Como \(P_r\) e \(w_i^r\) somam 1 em \(r\), vale \(\sum_r b_i^r = 0\). Interpreta-se
+\(b_i^r &gt; 0\) como <em>superávit</em> (a UF concentra mais trabalhadores potencialmente
+disponíveis do que a sua participação no VAB do setor) e \(b_i^r &lt; 0\) como
+<em>déficit</em>.
+</p>
+
+<h3>D. Fluxo líquido entre UFs vizinhas</h3>
+<p>
+Sejam \(A\) e \(B\) duas UFs <em>adjacentes</em> (que compartilham fronteira). O fluxo
+líquido entre elas, para o setor \(i\), é definido pela diferença dos saldos:
+\[
+\varphi_i^{A \to B} = b_i^A - b_i^B .
+\tag{7}
+\]
+A seta aponta do estado de maior saldo para o de menor saldo: se \(\varphi_i^{A \to B}&gt;0\)
+(\(b_i^A&gt;b_i^B\)), a seta cruza a fronteira no sentido \(A\to B\); caso contrário, no
+sentido \(B\to A\). Como \(\varphi\) é uma diferença, quando os saldos têm sinais opostos a
+diferença equivale à <em>soma</em> das magnitudes e, quando têm o mesmo sinal, à
+<em>subtração</em>, a seta representa, portanto, o resultado líquido da confrontação
+oferta \(\times\) demanda entre os dois vizinhos.
+</p>
+
+<h3>E. Normalização e codificação visual</h3>
+<p>
+Para que setores com forte concentração (por exemplo, um único estado com quase todo o VAB)
+não esmaguem as demais setas, a magnitude é comprimida por raiz quadrada e normalizada pelo
+máximo do setor. Seja \(M_i = \max_{A,B} |\varphi_i^{A\to B}|\) o maior fluxo (em módulo)
+entre fronteiras do setor \(i\). A magnitude visual da seta é
+\[
+\mu_i^{A \to B} = \sqrt{\frac{|\varphi_i^{A \to B}|}{M_i}} .
+\tag{8}
+\]
+Fronteiras com \(\mu &lt; 0{,}30\) são omitidas (fluxo desprezível). O comprimento
+\(L\) e a espessura \(E\) da seta são funções afins de \(\mu\):
+\[
+L(\mu) = L_{\min} + (L_{\max}-L_{\min})\,\mu,
+\qquad L_{\min}=0{,}22^\circ,\; L_{\max}=0{,}75^\circ,
+\tag{9}
+\]
+\[
+E(\mu) = E_0 + E_1\,\mu,
+\qquad E_0=1\ \text{px},\; E_1=4\ \text{px}.
+\tag{10}
+\]
+A cor da seta codifica a própria magnitude, reforçando a leitura das diferenças de tamanho.
+Define-se, para cada setor \(i\), o intervalo de magnitudes das setas efetivamente exibidas,
+\(\mu_i^{\min}\) e \(\mu_i^{\max}\), e normaliza-se a posição de cada seta nesse intervalo:
+\[
+t_i^{A \to B} = \frac{\mu_i^{A \to B} - \mu_i^{\min}}{\mu_i^{\max} - \mu_i^{\min}},
+\tag{11}
+\]
+interpolando a cor da seta entre o azul (\(t=0\), menor fluxo) e o vermelho (\(t=1\), maior
+fluxo), em espaço HSL. Como a normalização é local (por mapa), o contraste entre setas de
+tamanhos próximos é preservado mesmo quando os fluxos do setor são globalmente pequenos. A
+cor de fundo é uma escala linear de \(P_r\) entre um tom claro (potencial baixo) e um tom
+verde-escuro (potencial alto).
+</p>
+
+<h2>V. Construção cartográfica</h2>
+
+<p>
+A base cartográfica é a malha das 27 UFs do IBGE (BR_UF_2022) [6], em coordenadas
+geográficas (WGS84). Para cada UF calcula-se o centroide do polígono. A <em>adjacência</em>
+entre UFs é determinada por um critério geométrico: dois estados são vizinhos quando a
+interseção da fronteira de um com o polígono do outro forma um segmento de comprimento
+superior a um limiar mínimo, o que descarta toques por ponto (quinas). Para cada par de
+vizinhos \(A,B\):
+</p>
+
+<ul>
+<li>a fronteira compartilhada é a interseção \(\partial A \cap B\) (ou \(\partial B \cap A\));</li>
+<li>o <em>ponto de ancoragem</em> da seta é o ponto médio do maior segmento dessa fronteira;</li>
+<li>o <em>vetor direção</em> \(\mathbf{u}_{AB}\) é o unitário que aponta do centroide de \(A\) para o centroide de \(B\).</li>
+</ul>
+
+<p>
+A seta é desenhada como um segmento de reta centrado no ponto de ancoragem, orientado ao
+longo de \(\pm\mathbf{u}_{AB}\) conforme o sinal de \(\varphi_i^{A\to B}\), com comprimento
+\(L(\mu)\) e espessura \(E(\mu)\), e um marcador de ponta (cabeça de seta) na extremidade de
+chegada. Como se trata de uma grade fixa de vizinhos, o conjunto de fronteiras é o mesmo
+para os doze setores, o que muda entre mapas é apenas o valor, o sentido e a cor das setas.
+Para a malha brasileira de 27 UFs obtêm-se 51 fronteiras internas.
+</p>
+
+<h2>VI. Leitura dos mapas</h2>
+
+<p>
+Cada um dos doze mapas exibe, em fundo, o potencial de realocação de trabalhadores \(P_r\) e, em primeiro
+plano, as setas de fluxo líquido do setor. A leitura completa de um mapa resume-se aos
+seguintes elementos.
+</p>
+
+<p>
+<b>Fundo (choropleth).</b> A cor de cada UF codifica \(P_r\) (fração do total nacional de
+subutilizados + informais). Tons claros indicam UFs com pequena fração do potencial nacional;
+tons verde-escuro indicam UFs que concentram grande fração, isto é, muitos trabalhadores
+potencialmente disponíveis para realocação. A barra de cores (colorbar) é graduada em
+porcentagem do total nacional e tem domínio fixo \([0,1]\), igual para os doze mapas, o que
+permite compará-los diretamente.
+</p>
+
+<p>
+<b>Setas.</b> Cada seta assenta sobre uma fronteira entre dois estados vizinhos e resume três
+informações: (i) a <em>direção</em> aponta do estado de maior saldo para o de menor saldo (do
+superávit ao déficit de trabalhadores); (ii) o <em>comprimento e a espessura</em> codificam a
+magnitude normalizada \(\mu\), setas longas e grossas correspondem a grandes fluxos líquidos;
+(iii) a <em>cor</em> reforça essa magnitude, do azul (menor) ao vermelho (maior), normalizada
+pelo mínimo e pelo máximo de cada mapa (Seção IV-E). A ausência de seta numa fronteira
+significa que o fluxo ali ficou abaixo do limiar \(\mu&lt;0{,}30\).
+</p>
+
+<p>
+<b>Interpretação 2×2.</b> Cruzando o sinal do saldo \(b_i^r\) com a intensidade do fundo
+(acima/abaixo da mediana nacional de \(P_r\)), cada UF cai numa de quatro categorias,
+sintetizadas na Tabela III.
+</p>
+
+<table>
+<caption>TABELA III, Diagnóstico por UF: saldo \(\times\) potencial</caption>
+<tr><th></th><th>Fundo escuro (alto \(P_r\))</th><th>Fundo claro (baixo \(P_r\))</th></tr>
+<tr><td class="l"><b>Superávit</b> (\(b_i^r\ge 0\))</td><td class="l">forte exportador de trabalhadores</td><td class="l">exportador limitado</td></tr>
+<tr><td class="l"><b>Déficit</b> (\(b_i^r&lt;0\))</td><td class="l">absorve localmente</td><td class="l">importador (precisa de trabalhadores)</td></tr>
+</table>
+
+<p>
+As setas de um mapa concentram-se, assim, nas fronteiras entre estados de categorias
+opostas, e a sua direção revela, para aquele setor, a orientação predominante do fluxo
+líquido entre os vizinhos.
+</p>
+
+<h2>VII. Implementação de referência</h2>
+
+<p>
+O encadeamento de equações das Seções IV e V independe da linguagem de programação; qualquer
+implementação que reproduza (3)–(10) e o critério de adjacência da Seção V gera os mesmos
+mapas. Uma implementação completa, em Python (bibliotecas Dash e Plotly), está disponível no
+repositório <em>desempregoZero</em> [8], citado também nas Referências; ela serve de exemplo
+de aplicação e inclui a leitura automática das tabelas e da malha, a validação dos totais e a
+exportação das doze figuras.
+</p>
+
+<h2>VIII. Conclusão</h2>
+
+<p>
+O artigo apresentou um procedimento autocontido para construir doze mapas de fluxo líquido de
+trabalhadores entre UFs, um por setor da MIP. O método combina apenas quatro operações
+elementares: a normalização do valor adicionado por UF (peso \(w_i^r\)), a soma normalizada da
+subutilização com os informais (potencial \(P_r\)), a diferença entre ambos (saldo
+\(b_i^r\)) e a diferença dos saldos entre vizinhos (fluxo \(\varphi_i^{A\to B}\)), seguida de
+uma compressão por raiz quadrada para a codificação visual. Todas as fontes são públicas e
+atualizadas periodicamente, de modo que o mesmo roteiro pode ser reexecutado com dados novos
+para regenerar os mapas. O Apêndice a seguir exibe os doze mapas, um por página, como exemplo
+do resultado.
+</p>
+
+<h2>Referências</h2>
+<ol class="refs">
+<li>L. Neves, &ldquo;Planificação Econômica Direta: Sem Cálculo de Preços-Sombra, sem Iterações para Aproximações e sem Simulações de Mercado,&rdquo; Universidade Federal Fluminense.</li>
+<li>L. Neves, &ldquo;Cálculo da Redução do Tempo de Trabalho para Zerar Desemprego e Satisfazer a Demanda Total sob uma Economia Planificada no Brasil,&rdquo; elaborado a partir de Neves (Planificação Econômica Direta), IBGE (MIP Brasil 2015), Aruto (tese, 2021), tabela CNAE 1.0–2.0, ILAESE 2025/26 e PNAD Contínua.</li>
+<li>IBGE, &ldquo;Sistema de Contas Regionais: Brasil 2023,&rdquo; Contas Nacionais, n. 101. Rio de Janeiro: IBGE, 2023. Disponível em: https://www.ibge.gov.br/estatisticas/economicas/contas-nacionais/9054-contas-regionais-do-brasil.html; https://biblioteca.ibge.gov.br/visualizacao/livros/liv102045.pdf; tabelas XLS (Tabela 6): http://ftp.ibge.gov.br/Contas_Regionais/2022/xls/Especiais_2010_2022_xls.zip</li>
+<li>IBGE, &ldquo;Pesquisa Nacional por Amostra de Domicílios Contínua, PNAD Contínua: subutilização da força de trabalho por UF,&rdquo; Tabela 4666. SIDRA. Disponível em: https://sidra.ibge.gov.br/tabela/4666</li>
+<li>IBGE, &ldquo;Pesquisa Nacional por Amostra de Domicílios Contínua, PNAD Contínua: trabalhadores informais por UF,&rdquo; Tabela 8517. SIDRA. Disponível em: https://sidra.ibge.gov.br/tabela/8517</li>
+<li>IBGE, &ldquo;Malha Municipal 2022, Unidades da Federação (BR_UF_2022),&rdquo; Rio de Janeiro: IBGE, 2022. Disponível em: ftp://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/UFs/BR_UF_2022.zip; https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais.html</li>
+<li>ILAESE, Instituto Latino-americano de Estudos Socioeconômicos, &ldquo;Anuário Estatístico do ILAESE 2025: Trabalho e Exploração,&rdquo; v. 4. São Paulo: ILAESE/Sundermann, 2025. Disponível em: https://www.ilaese.org.br/</li>
+<li>L. Neves, &ldquo;desempregoZero: Potencial de Realocação de Trabalhadores por Setor, Brasil,&rdquo; código-fonte. Disponível em: https://github.com/lorranluiz/desempregoZero.git</li>
+</ol>
+
+</div><!-- /columns -->
+
+<!-- ================= Apêndice: os doze mapas ================= -->
+<div class="appendix">
+<h2>Apêndice, Os doze mapas (um por página)</h2>
+
+<p class="small" style="text-align:justify;">
+Em cada figura, a barra de cores à direita é a mesma para os doze mapas: ela mede o
+potencial de realocação de trabalhadores \(P_r\) como fração do total nacional, entre 0 (claro) e 1
+(verde-escuro). As setas apontam do superávit ao déficit, e o comprimento/espessura é
+proporcional a \(\mu=\sqrt{|\varphi|/M_i}\), com omissão das fronteiras em que
+\(\mu&lt;0{,}30\). A cor da seta codifica a magnitude do fluxo, do azul (menor) ao vermelho
+(maior), normalizada pelo mínimo e pelo máximo de cada mapa (Seção IV-E). O título de cada
+mapa traz o código e o nome do setor; o par \(\rho_i\) e a classificação (atração/repulsão)
+estão na Tabela I e são repetidos na legenda de cada figura.
+</p>
+
+<figure class="map-page">
+  <img src="figs/setor_01.png" alt="Mapa do setor 01, Agropecuária">
+  <figcaption><b>Fig. 1.</b> Setor 01, Agropecuária (\(\rho_1=1{,}616&gt;\bar{\rho}\): setor de
+  atração). As setas indicam o fluxo líquido de trabalhadores entre UFs vizinhas: partem dos
+  estados com saldo \(b_i^r\) maior (superávit) para os de saldo menor (déficit); comprimento,
+  espessura e cor (azul = menor, vermelho = maior) codificam a magnitude do fluxo. O fundo
+  mostra \(P_r\): verde-escuro = maior concentração do potencial nacional de trabalhadores
+  subutilizados e informais.</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_02.png" alt="Mapa do setor 02, Indústrias extrativas">
+  <figcaption><b>Fig. 2.</b> Setor 02, Indústrias extrativas (\(\rho_2=1{,}768&gt;\bar{\rho}\):
+  setor de atração). É o maior \(\rho_i\) da Tabela I. A forte concentração do VAB do setor num
+  único estado faz surgir setas longas, grossas e avermelhadas nas maiores diferenças de saldo
+  entre vizinhos.</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_03.png" alt="Mapa do setor 03, Indústrias de transformação">
+  <figcaption><b>Fig. 3.</b> Setor 03, Indústrias de transformação (\(\rho_3=1{,}603&gt;\bar{\rho}\):
+  setor de atração). Leitura idêntica às anteriores: direção = superávit &rarr; déficit;
+  comprimento, espessura e cor = magnitude do fluxo.</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_04.png" alt="Mapa do setor 04, Eletricidade e gás, água, esgoto e resíduos">
+  <figcaption><b>Fig. 4.</b> Setor 04, Eletricidade e gás, água, esgoto e resíduos
+  (\(\rho_4=1{,}415&gt;\bar{\rho}\): setor de atração).</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_05.png" alt="Mapa do setor 05, Construção">
+  <figcaption><b>Fig. 5.</b> Setor 05, Construção (\(\rho_5=1{,}017&lt;\bar{\rho}\): setor de
+  repulsão). É o menor \(\rho_i\) da Tabela I; a cor das setas segue a magnitude do fluxo, do
+  azul ao vermelho.</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_06.png" alt="Mapa do setor 06, Comércio e reparação">
+  <figcaption><b>Fig. 6.</b> Setor 06, Comércio e reparação (\(\rho_6=1{,}440&gt;\bar{\rho}\):
+  setor de atração).</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_07.png" alt="Mapa do setor 07, Transporte, armazenagem e correio">
+  <figcaption><b>Fig. 7.</b> Setor 07, Transporte, armazenagem e correio
+  (\(\rho_7=1{,}340&lt;\bar{\rho}\): setor de repulsão).</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_08.png" alt="Mapa do setor 08, Informação e comunicação">
+  <figcaption><b>Fig. 8.</b> Setor 08, Informação e comunicação
+  (\(\rho_8=1{,}231&lt;\bar{\rho}\): setor de repulsão).</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_09.png" alt="Mapa do setor 09, Atividades financeiras e seguros">
+  <figcaption><b>Fig. 9.</b> Setor 09, Atividades financeiras e seguros
+  (\(\rho_9=1{,}194&lt;\bar{\rho}\): setor de repulsão).</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_10.png" alt="Mapa do setor 10, Atividades imobiliárias">
+  <figcaption><b>Fig. 10.</b> Setor 10, Atividades imobiliárias
+  (\(\rho_{10}=1{,}211&lt;\bar{\rho}\): setor de repulsão).</figcaption>
+</figure>
+
+<figure class="map-page">
+  <img src="figs/setor_11.png" alt="Mapa do setor 11, Outros serviços">
+  <figcaption><b>Fig. 11.</b> Setor 11, Outros serviços
+  (\(\rho_{11}=1{,}203&lt;\bar{\rho}\): setor de repulsão).</figcaption>
+</figure>
+
+<figure class="map-page" style="page-break-after: auto;">
+  <img src="figs/setor_12.png" alt="Mapa do setor 12, Administração, defesa, educação e saúde públicas">
+  <figcaption><b>Fig. 12.</b> Setor 12, Administração, defesa, educação e saúde públicas
+  (\(\rho_{12}=1{,}460&gt;\bar{\rho}\): setor de atração).</figcaption>
+</figure>
+
+</div><!-- /appendix -->
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 """Construção das figuras Plotly (choropleth de fundo + setas de fluxo).
 
-A camada de fundo (potencial de mobilidade) é a mesma para os 12 setores. O
+A camada de fundo (potencial de realocação de trabalhadores) é a mesma para os 12 setores. O
 que muda entre setores são as **setas de fluxo líquido entre estados
 vizinhos**, desenhadas nas fronteiras.
 
@@ -12,13 +12,14 @@ Modelo (fluxo entre estados):
     déficit, com comprimento/espessura proporcionais a |fluxo|.
 
 Tema retro-futurista "verde neon" (modo escuro):
-  * seta ciano  #00e5ff = setor de atração (ρᵢ > ρ̄);
-  * seta vermelha #ff2d55 = setor de repulsão (ρᵢ < ρ̄);
+  * cor da seta codifica a magnitude do fluxo líquido, do azul (menor) ao
+    vermelho (maior), normalizada pelo mínimo/máximo de cada mapa;
   * fundo escuro (#07120b) -> verde neon (#00ff9d).
 """
 
 from __future__ import annotations
 
+import colorsys
 import math
 
 import numpy as np
@@ -26,7 +27,10 @@ import plotly.graph_objects as go
 
 from data import RHO, SECTOR_NAMES, UF_NAMES
 
-# Paleta neon (modo escuro).
+# Paleta neon (modo escuro). `ATTRACTION_COLOR` e `REPULSION_COLOR` são os
+# extremos da escala de magnitude das setas: azul = menor fluxo, vermelho =
+# maior fluxo (lidos em tempo de execução, para permitir a sobrescrita por
+# `export_maps.py`).
 ATTRACTION_COLOR = "#00e5ff"
 REPULSION_COLOR = "#ff2d55"
 BACKGROUND_LOW = "#07120b"
@@ -45,9 +49,11 @@ COLORBAR_TEXT = "#9fffc7"
 ARROW_LEN_MIN = 0.22    # graus — comprimento mínimo da seta
 ARROW_LEN_MAX = 0.75    # graus — comprimento máximo da seta
 ARROW_WIDTH_BASE = 1.0  # espessura mínima do eixo (px)
-ARROW_WIDTH_SCALE = 4.0  # espessura = base + scale * T_global
-ARROW_HEAD_BASE = 6.0   # tamanho base da ponta (px)
-ARROW_HEAD_SCALE = 2.0  # ponta = base + scale * largura
+ARROW_WIDTH_SCALE = 4.0  # espessura = base + scale * mag_norm
+ARROW_HEAD_ANGLE = 30.0  # meia-abertura da ponta (graus)
+ARROW_HEAD_FRAC = 0.45   # ponta = fração do comprimento da seta
+ARROW_HEAD_MIN = 0.10    # comprimento mínimo da ponta (graus)
+ARROW_HEAD_MAX = 0.26    # comprimento máximo da ponta (graus)
 
 # Limiar de visibilidade: omite fronteiras cujo fluxo (após compressão por
 # raiz quadrada e normalização por setor) fique abaixo deste valor.
@@ -55,6 +61,37 @@ FLOW_LIMIAR = 0.30
 
 # Margem (em graus) aplicada ao enquadramento do mapa.
 GEO_MARGIN = 1.2
+
+
+def _hex_to_rgb(color: str) -> tuple[float, float, float]:
+    """Converte "#rrggbb" em tupla RGB (0..1)."""
+    color = color.lstrip("#")
+    return tuple(int(color[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
+
+
+def _rgb_to_hex(rgb: tuple[float, float, float]) -> str:
+    """Converte tupla RGB (0..1) em "#rrggbb"."""
+    return "#" + "".join(f"{round(c * 255):02x}" for c in rgb)
+
+
+def _lerp_color(c_low: str, c_high: str, t: float) -> str:
+    """Interpola entre duas cores no espaço HSL, mantendo o tom vibrante.
+
+    O matiz (hue) cresce de `c_low` (azul) até `c_high` (vermelho) pelo caminho
+    curto (azul -> roxo -> magenta -> vermelho), sem passar por cinza. `t` em
+    [0, 1]: 0 -> `c_low`, 1 -> `c_high`.
+    """
+    r1, g1, b1 = _hex_to_rgb(c_low)
+    r2, g2, b2 = _hex_to_rgb(c_high)
+    h1, l1, s1 = colorsys.rgb_to_hls(r1, g1, b1)
+    h2, l2, s2 = colorsys.rgb_to_hls(r2, g2, b2)
+    if h2 < h1:
+        h2 += 1.0
+    h = h1 + (h2 - h1) * t
+    l = l1 + (l2 - l1) * t
+    s = s1 + (s2 - s1) * t
+    r, g, b = colorsys.hls_to_rgb(h % 1.0, l, s)
+    return _rgb_to_hex((r, g, b))
 
 
 def _median_potencial(potencial: dict[str, float]) -> float:
@@ -126,7 +163,9 @@ def _add_flow_arrow(
     """Adiciona uma seta de fluxo centrada no ponto médio da fronteira.
 
     `dir_unit` aponta do superávit ao déficit; a seta atravessa a fronteira.
-    Comprimento e espessura são proporcionais a `mag_norm` (0..1).
+    Comprimento e espessura são proporcionais a `mag_norm` (0..1). A ponta é
+    desenhada como um "V" (chevron) de linha na extremidade de chegada, de modo
+    que a seta tenha a ponta exatamente na direção do fluxo.
     """
     length_deg = ARROW_LEN_MIN + (ARROW_LEN_MAX - ARROW_LEN_MIN) * mag_norm
     width_px = ARROW_WIDTH_BASE + ARROW_WIDTH_SCALE * mag_norm
@@ -134,12 +173,12 @@ def _add_flow_arrow(
     dx, dy = dir_unit
     half = length_deg / 2.0
     tail = (mid[0] - dx * half, mid[1] - dy * half)
-    head = (mid[0] + dx * half, mid[1] + dy * half)
+    tip = (mid[0] + dx * half, mid[1] + dy * half)
 
     fig.add_trace(
         go.Scattergeo(
-            lon=[tail[0], head[0]],
-            lat=[tail[1], head[1]],
+            lon=[tail[0], tip[0]],
+            lat=[tail[1], tip[1]],
             mode="lines",
             line=dict(color=color, width=width_px),
             hoverinfo="skip",
@@ -147,20 +186,28 @@ def _add_flow_arrow(
         )
     )
 
-    bearing = math.degrees(math.atan2(head[0] - tail[0], head[1] - tail[1])) % 360.0
-    head_size = ARROW_HEAD_BASE + ARROW_HEAD_SCALE * width_px
+    # Ponta (chevron): dois segmentos saindo da ponta para trás, simétricos.
+    head_len = min(ARROW_HEAD_MAX, max(ARROW_HEAD_MIN, length_deg * ARROW_HEAD_FRAC))
+    alpha = math.radians(ARROW_HEAD_ANGLE)
+    cos_a = math.cos(alpha)
+    sin_a = math.sin(alpha)
+
+    bx, by = -dx, -dy  # vetor unitário "para trás" (da ponta para a cauda)
+    b1 = (
+        tip[0] + (bx * cos_a - by * sin_a) * head_len,
+        tip[1] + (bx * sin_a + by * cos_a) * head_len,
+    )
+    b2 = (
+        tip[0] + (bx * cos_a + by * sin_a) * head_len,
+        tip[1] + (-bx * sin_a + by * cos_a) * head_len,
+    )
+
     fig.add_trace(
         go.Scattergeo(
-            lon=[head[0]],
-            lat=[head[1]],
-            mode="markers",
-            marker=dict(
-                symbol="arrow",
-                size=head_size,
-                angle=bearing,
-                color=color,
-                line=dict(width=0),
-            ),
+            lon=[b1[0], tip[0], b2[0]],
+            lat=[b1[1], tip[1], b2[1]],
+            mode="lines",
+            line=dict(color=color, width=width_px),
             hoverinfo="skip",
             showlegend=False,
         )
@@ -186,7 +233,6 @@ def build_sector_figure(
 
     rho_bar = res["rho_bar"]
     sector_name = SECTOR_NAMES[sector_id]
-    color = ATTRACTION_COLOR if RHO[sector_id] > rho_bar else REPULSION_COLOR
 
     codes = _ordered_codes(geojson)
     code_to_name = {
@@ -237,8 +283,7 @@ def build_sector_figure(
         colorbar=(
             dict(
                 title=(
-                    "Potencial de mobilidade<br>"
-                    "(subutilização + informais,<br>share nacional)"
+                    "Potencial de realocação de<br>trabalhadores (subutilização<br>+ informais, share nacional)"
                 ),
                 tickformat=".1%",
                 thickness=16,
@@ -259,12 +304,28 @@ def build_sector_figure(
     # Setas de fluxo nas fronteiras.
     sector_flows = flow_data["flows"][sector_id]
     sector_max = flow_data["sector_max"][sector_id]
+
+    # Coleta as setas exibidas (acima do limiar) para normalizar a cor pelo
+    # mínimo/máximo de magnitude do próprio mapa.
+    shown: list[tuple[dict, float]] = []
     for b in sector_flows:
         # Compressão por raiz quadrada + normalização pelo máximo do setor,
         # para atenuar a cauda pesada (ex.: concentração extrativa no RJ).
         mag_norm = math.sqrt(b["mag"] / sector_max)
         if mag_norm < FLOW_LIMIAR:
             continue
+        shown.append((b, mag_norm))
+
+    mags = [m for _, m in shown]
+    mag_min = min(mags) if mags else 0.0
+    mag_max = max(mags) if mags else 1.0
+
+    for b, mag_norm in shown:
+        if mag_max > mag_min:
+            t = (mag_norm - mag_min) / (mag_max - mag_min)
+        else:
+            t = 1.0  # sem contraste (ex.: uma única seta): tom máximo
+        color = _lerp_color(ATTRACTION_COLOR, REPULSION_COLOR, t)
 
         # Direção: do superávit ao déficit. `dir` aponta de cd_a -> cd_b.
         sign = 1.0 if b["flux"] >= 0 else -1.0

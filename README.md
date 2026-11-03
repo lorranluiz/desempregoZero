@@ -1,8 +1,8 @@
-# Potencial de Mobilidade de Trabalhadores por Setor — Brasil
+# Potencial de Realocação de Trabalhadores por Setor — Brasil
 
 Servidor web interativo (Dash/Plotly) que exibe **12 mapas do Brasil** (um por
-setor econômico), com **setas de atração/repulsão** de trabalhadores e uma
-**camada de fundo** representando o potencial de mobilidade de trabalhadores
+setor econômico), com **setas de fluxo líquido** de trabalhadores e uma
+**camada de fundo** representando o potencial de realocação de trabalhadores
 por Unidade da Federação (subutilização da força de trabalho + informais).
 
 ## Instalação
@@ -40,8 +40,8 @@ Tabela II-quinquies, ρᵢ 2024).
 ## Metodologia
 
 * **ρ̄ = 1.375** (média dos 12 parâmetros setoriais; valor calculado ≈ 1.3748).
-  Há exatamente 6 setores com ρᵢ > ρ̄ (azul) e 6 com ρᵢ < ρ̄ (vermelho).
-* **Fundo**: potencial de mobilidade = (subutilização + informais) normalizado
+  Há exatamente 6 setores com ρᵢ > ρ̄ e 6 com ρᵢ < ρ̄.
+* **Fundo**: potencial de realocação de trabalhadores = (subutilização + informais) normalizado
   pelo total nacional (≈ 57,96 milhões de pessoas). Escala branco → cinza-azulado.
 * **Setas (fluxo entre estados)**: em vez de uma seta por estado, cada
   **fronteira entre estados vizinhos** recebe uma seta de **fluxo líquido**:
@@ -53,12 +53,14 @@ Tabela II-quinquies, ρᵢ 2024).
   * Comprimento e espessura proporcionais a `√(|fluxo|/max_setor)` (compressão
     por raiz quadrada, para atenuar a forte concentração setorial — ex.:
     extrativas no RJ ≈ 68% do VAB nacional).
+  * **Cor da seta** codifica a magnitude do fluxo, do azul (menor) ao vermelho
+    (maior), normalizada pelo mínimo/máximo de cada mapa.
 
 ## Limitações
 
 * VAB de 2022 e subutilização/informais de 2024 — anos diferentes, mas ambos os
   mais recentes disponíveis.
-* O potencial de mobilidade é um **estoque**, não um fluxo; a realocação
+* O potencial de realocação de trabalhadores é um **estoque**, não um fluxo; a realocação
   efetiva depende de política, qualificação e custos de migração.
 * Informais já estão ocupados; sua realocação para setores formais depende de
   salário, formalização e demanda por qualificação.
@@ -88,8 +90,9 @@ Tabela II-quinquies, ρᵢ 2024).
    (após normalização por setor) são omitidas.
 8. **Tema escuro retro-futurista "verde neon" (padrão)**: página e mapas em
    fundo escuro (`#050a06`), choropleth de verde-escuro (`#07120b`) a verde
-   neon (`#00ff9d`), setas em ciano `#00e5ff` (atração) e vermelho `#ff2d55`
-   (repulsão). Estilos em `assets/style.css`.
+   neon (`#00ff9d`), setas com cor de magnitude do azul `#00e5ff` (menor
+   fluxo) ao vermelho `#ff2d55` (maior fluxo), normalizada por mapa. Estilos
+   em `assets/style.css`.
 9. **Popup por clique**: o tooltip de hover foi removido; as informações do
    estado aparecem num cartão neon ao **clicar** no estado, posicionado junto
    ao clique, e somem ao clicar fora (overlay) ou pressionar `Esc`. O conteúdo

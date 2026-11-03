@@ -1,4 +1,4 @@
-"""Aplicação Dash: mapas de potencial de mobilidade de trabalhadores por setor.
+"""Aplicação Dash: mapas de potencial de realocação de trabalhadores por setor.
 
 Executar com:
     python app.py
@@ -148,7 +148,7 @@ def _build_panel(sid: str) -> list:
         html.H4("Top 5 — concentração setorial (w)"),
         html.Ol([html.Li(f"{UF_SIGLAS[uf]} — {_w_label(uf)}") for uf in top_w]),
 
-        html.H4("Top 5 — potencial de mobilidade"),
+        html.H4("Top 5 — potencial de realocação de trabalhadores"),
         html.Ol([html.Li(f"{UF_SIGLAS[uf]} — {_pot_label(uf)}") for uf in top_pot]),
 
         html.H4("Top 5 — fluxo líquido (fronteiras)"),
@@ -184,7 +184,7 @@ def _build_popup_html(sid: str, cd: str) -> str:
         f'<div class="pp-sector">{SECTOR_NAMES[sid]}</div>'
         f'<div class="pp-meta">ρᵢ {rho:.3f} &nbsp;·&nbsp; ρ̄ {rho_bar:.3f} &nbsp;·&nbsp; '
         f'<span style="color:{color};">{saldo_label} {sal:+.2%}</span></div>'
-        f'<div class="pp-block">POTENCIAL DE MOBILIDADE</div>'
+        f'<div class="pp-block">POTENCIAL DE REALOCAÇÃO DE TRABALHADORES</div>'
         + row("Subutilização", f"{sub:,.0f}")
         + row("Informais", f"{inf:,.0f}")
         + row("Total", f"{total:,.0f}")
@@ -208,20 +208,20 @@ POPUP_JSON = json.dumps(POPUP_HTML, ensure_ascii=False)
 # ---------------------------------------------------------------------------
 # App e layout
 # ---------------------------------------------------------------------------
-app = dash.Dash(__name__, title="Potencial de Mobilidade de Trabalhadores")
+app = dash.Dash(__name__, title="Potencial de Realocação de Trabalhadores")
 
 app.layout = html.Div(
     className="app-shell",
     children=[
         html.H1(
-            "Potencial de Mobilidade de Trabalhadores por Setor — Brasil (2022/2024)",
+            "Potencial de Realocação de Trabalhadores por Setor — Brasil (2022/2024)",
             className="neon-title",
         ),
         html.P(
             "Setas: fluxo líquido de trabalhadores entre estados vizinhos (uma seta por fronteira), "
-            "do superávit (potencial > w) ao déficit (w > potencial). Ciano = setor de atração (ρᵢ > ρ̄); "
-            "vermelho = setor de repulsão (ρᵢ < ρ̄). Fundo: potencial de mobilidade por UF. "
-            "Clique num estado para detalhes.",
+            "do superávit (potencial > w) ao déficit (w > potencial). Cor da seta: do azul (menor fluxo) "
+            "ao vermelho (maior fluxo), normalizada por mapa. Fundo: potencial de realocação de "
+            "trabalhadores por UF. Clique num estado para detalhes.",
             className="subtitle",
         ),
         html.Div(
@@ -257,10 +257,23 @@ app.layout = html.Div(
                 html.Strong("Legenda geral"),
                 html.Div(
                     [
-                        html.Span("■", className="swatch", style={"color": figures.ATTRACTION_COLOR}),
-                        html.Span(" Seta ciano = setor de atração (ρᵢ > ρ̄)"),
-                        html.Span("   ■", className="swatch", style={"color": figures.REPULSION_COLOR, "margin-left": "16px"}),
-                        html.Span(" Seta vermelha = setor de repulsão (ρᵢ < ρ̄)"),
+                        html.Div(
+                            style={
+                                "display": "inline-block",
+                                "width": "160px",
+                                "height": "12px",
+                                "background": (
+                                    f"linear-gradient(to right, {figures.ATTRACTION_COLOR}, "
+                                    f"{figures.REPULSION_COLOR})"
+                                ),
+                                "verticalAlign": "middle",
+                                "marginRight": "8px",
+                            }
+                        ),
+                        html.Span(
+                            " Cor da seta = magnitude do fluxo (azul = menor, vermelho = maior), "
+                            "normalizada por mapa."
+                        ),
                     ]
                 ),
                 html.Div(
@@ -268,7 +281,7 @@ app.layout = html.Div(
                     "(potencial > w) ao déficit (w > potencial). Sinais opostos somam; sinais iguais subtraem."
                 ),
                 html.Div("Comprimento e espessura da seta = magnitude do fluxo (normalizada por setor)."),
-                html.Div("Fundo = potencial de mobilidade (subutilização + informais) normalizado: escuro = pouco, verde neon = muito."),
+                html.Div("Fundo = potencial de realocação de trabalhadores (subutilização + informais) normalizado: escuro = pouco, verde neon = muito."),
                 html.Div(
                     "Estados escuros com saldo positivo = forte exportador; escuros com déficit = absorvem localmente; "
                     "claros com saldo positivo = exportador limitado; claros com déficit = importador (precisa de trabalhadores)."
@@ -281,7 +294,7 @@ app.layout = html.Div(
             children=[
                 "Fontes: IBGE (Contas Regionais 2022, tab06; PNAD Contínua 2024 — subutilização, Tabela 4666; "
                 "informais, Tabela 8517); ILAESE (Anuário 2025/26, Tabela II-quinquies, ρᵢ 2024). "
-                "Nota: potencial de mobilidade = subutilização + informais, sem fator de desconto; "
+                "Nota: potencial de realocação de trabalhadores = subutilização + informais, sem fator de desconto; "
                 "as setas representam o fluxo líquido entre estados vizinhos (saldo = potencial − w); ver README."
             ],
         ),
